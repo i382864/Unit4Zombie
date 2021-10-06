@@ -21,6 +21,8 @@ public class SMG : MonoBehaviour
     public ParticleSystem muzzleFlash;
     //Eject bullet casin
     public ParticleSystem bulletCasing;
+    //Blood effect
+    public GameObject bloodEffect;
 
     //RateOfFire
     [SerializeField]
@@ -61,6 +63,7 @@ public class SMG : MonoBehaviour
                 {
                     EnemyHealth enemyHealthScript = hit.transform.GetComponent<EnemyHealth>();
                     enemyHealthScript.DeductHealth(damageEnemy);
+                    Instantiate(bloodEffect, hit.point, Quaternion.identity);
                 } 
                 else
                 {
