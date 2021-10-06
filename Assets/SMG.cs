@@ -16,6 +16,12 @@ public class SMG : MonoBehaviour
     [SerializeField]
     int currentAmmo;
 
+    //Weapon Effects
+    //MuzzleFlash
+    public ParticleSystem muzzleFlash;
+    //Eject bullet casin
+    public ParticleSystem bulletCasing;
+
     //RateOfFire
     [SerializeField]
     float rateOfFire;
@@ -23,6 +29,12 @@ public class SMG : MonoBehaviour
 
     [SerializeField]
     float weaponRange;
+
+    void Start()
+    {
+        muzzleFlash.Stop();
+        bulletCasing.Stop();
+    }
 
     void Update()
     {
@@ -41,6 +53,8 @@ public class SMG : MonoBehaviour
 
             currentAmmo--;
 
+            StartCoroutine(WeaponEffects());
+
             if(Physics.Raycast(shootPoint.position, shootPoint.forward, out hit, weaponRange))
             {
                 if(hit.transform.tag == "Enemy")
@@ -54,5 +68,14 @@ public class SMG : MonoBehaviour
                 }
             }
         }
+    }
+
+    IEnumerator WeaponEffects()
+    {
+        bulletCasing.Play();
+        muzzleFlash.Play();
+        yield return new WaitForEndOfFrame();
+        muzzleFlash.Stop();
+        bulletCasing.Stop();
     }
 }
