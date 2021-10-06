@@ -6,6 +6,10 @@ public class SMG : MonoBehaviour
 {
     RaycastHit hit;
 
+    //Used to damage enemy
+    [SerializeField]
+    float damageEnemy = 10f;
+
     [SerializeField]
     Transform shootPoint;
 
@@ -41,7 +45,8 @@ public class SMG : MonoBehaviour
             {
                 if(hit.transform.tag == "Enemy")
                 {
-                    Debug.Log("Hit Enemy");
+                    EnemyHealth enemyHealthScript = hit.transform.GetComponent<EnemyHealth>();
+                    enemyHealthScript.DeductHealth(damageEnemy);
                 } 
                 else
                 {
