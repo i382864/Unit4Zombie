@@ -13,8 +13,11 @@ public class SMG : MonoBehaviour
     [SerializeField]
     Transform shootPoint;
 
-    [SerializeField]
-    int currentAmmo;
+    
+    public int currentAmmo = 30;
+    public int maxAmmo = 30;
+    public int carriedAmmo = 120;
+    bool isReloading;
 
     //Weapon Effects
     //MuzzleFlash
@@ -44,6 +47,15 @@ public class SMG : MonoBehaviour
         {
             Shoot();
         }
+        if(Input.GetButton("Fire1")&& currentAmmo <= 0)
+        {
+           DryFire();
+        }
+
+        else if(Input.GetKeyDown(KeyCode.R) && currentAmmo <= 0)
+        {
+            Reload();
+        }
     }
 
 
@@ -51,12 +63,22 @@ public class SMG : MonoBehaviour
     {
         if(Time.time > nextFire)
         {
+            nextFire = 0f;
             nextFire = Time.time + rateOfFire;
+     
 
             currentAmmo--;
 
             StartCoroutine(WeaponEffects());
 
+            ShootRay();
+
+            
+        }
+    }
+
+    void ShootRay()
+    {
             if(Physics.Raycast(shootPoint.position, shootPoint.forward, out hit, weaponRange))
             {
                 if(hit.transform.tag == "Enemy")
@@ -70,8 +92,49 @@ public class SMG : MonoBehaviour
                     Debug.Log("Hit Something Else");
                 }
             }
+    }
+
+
+    void DryFire()
+    {
+        if(Time.time > nextFire)
+        {
+            nextFire = 0f;
+            nextFire = Time.time + rateOfFire;
+     
+        //add dryfire anim
+
+        Debug.Log("Play Dry Fire Sound");
+
+            
         }
     }
+
+    void Reload()
+    {
+        if(carriedAmmo <= 0) return;
+        StartCoroutine(ReloadCountdown(2f));
+    }
+
+    IEnumerator ReloadCountdown(float timer)
+        {
+            while(timer > 0f)
+            {
+                isReloading = true;
+                timer -= Time.deltaTime;
+                yield return null;
+            }
+            if(timer <= 0f)
+            {
+                isReloading = false;
+                int bulletsNeededToFillMag = maxAmmo - currentAmmo;
+                int bulletsToDeduct = (carriedAmmo >= bulletsNeededToFillMag) ? bulletsNeededToFillMag : carriedAmmo;
+
+                carriedAmmo -= bulletsToDeduct;
+                currentAmmo += bulletsToDeduct;
+            }
+        }
+    
 
     IEnumerator WeaponEffects()
     {
